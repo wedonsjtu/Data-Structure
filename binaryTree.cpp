@@ -40,6 +40,9 @@ public:
 	void levelOrderWithSiblings() const;
 	void createTreeWithTheNumberOfNodes();
 	bool isComplete() const;
+	void preOrderWithoutRecursion() const;
+	void postOrderWithoutRecursion() const;
+	void midOrderWithoutRecursion() const;
 private:
 	int height(Node *t) const;
 	void clear(Node *t);
@@ -345,9 +348,6 @@ template <class elemType>
 void binaryTree<elemType>::createWithPreOrderAndMidOrder(Node *&r, char *pre, int pre1, int pre2, char *mid, int mid1, int mid2) {
 	if (pre1 > pre2 || mid1 > mid2) return;
 	r = new Node(pre[pre1]);
-	//Node* tmp = new Node('\0');
-	//r->left = tmp;
-	//r->right = tmp;
 	int i;
 	for (i = mid1; i <= mid2; ++i) {
 		if (mid[i] == pre[pre1]) {
@@ -355,9 +355,6 @@ void binaryTree<elemType>::createWithPreOrderAndMidOrder(Node *&r, char *pre, in
 			createWithPreOrderAndMidOrder(r->right, pre, i + pre1 - mid1 + 1, pre2, mid, i + 1, mid2);
 		}
 	}
-	//if (&r->left == &tmp) r->left = NULL;
-	//if (&r->right == &tmp) r->right = NULL;
-	//delete tmp;
 }
 
 template <class elemType>
@@ -366,6 +363,102 @@ void binaryTree<elemType>::createWithPreOrderAndMidOrder(char *pre, char* mid) {
 	while (pre[prelen] != '\0') ++prelen;
 	while (mid[midlen] != '\0') ++midlen;
 	createWithPreOrderAndMidOrder(root, pre, 0, prelen - 1, mid, 0, midlen - 1);
+}
+
+template <class elemType> class linkStack;
+
+template <class elemType>
+void binaryTree<elemType>::preOrderWithoutRecursion() const {
+	if (!root) {
+		cout << endl;
+		return;
+	}
+	linkStack<Node*> s;
+	Node* current;
+	s.push(root);
+	bool first = true;
+	while(!s.isEmpty()) {
+		current = s.pop();
+		if (first) {
+			cout << current->data;
+			first = false;
+		}
+		else cout << ' ' << current->data;
+		if (current->right) s.push(current->right);
+		if (current->left) s.push(current->left);
+	}
+	cout << endl;
+}
+
+template <class elemType>
+void binaryTree<elemType>::midOrderWithoutRecursion() const {
+	if (!root) {
+		cout << endl;
+		return;
+	}
+
+	struct StNode {
+		Node* node;
+		int TimesPop;
+		StNode(Node* n=NULL):node(n), TimesPop(0) {}
+	};
+
+	linkStack<StNode> s;
+	StNode current(root);
+	s.push(current);
+	bool first = true;
+	while(!s.isEmpty()) {
+		current = s.pop();
+		if (++current.TimesPop == 2) {
+			if (first) {
+				cout << current.node->data;
+				first = false;
+			}
+			else cout << ' ' << current.node->data;
+			if (current.node->right) s.push(StNode(current.node->right));
+		}
+		else {
+			s.push(current);
+			if (current.node->left) s.push(StNode(current.node->left));
+		}
+	}
+	cout << endl;
+}
+
+template <class elemType>
+void binaryTree<elemType>::postOrderWithoutRecursion() const {
+	if (!root) {
+		cout << endl;
+		return;
+	}
+
+	struct StNode {
+		Node* node;
+		int TimesPop;
+		StNode(Node* n=NULL):node(n), TimesPop(0) {}
+	};
+
+	linkStack<StNode> s;
+	StNode current(root);
+	s.push(current);
+	bool first = true;
+	while(!s.isEmpty()) {
+		current = s.pop();
+		if (++current.TimesPop == 3) {
+			if (first) {
+				cout << current.node->data;
+				first = false;
+			}
+			else cout << ' ' << current.node->data;
+			continue;
+		}
+		s.push(current);
+		if (current.TimesPop == 1) {
+			if (current.node->left) s.push(StNode(current.node->left));
+		}
+		else if (current.node->right) s.push(StNode(current.node->right));
+	}
+	cout << endl;
 }
 
 // ==============================================================
@@ -435,14 +528,71 @@ elemType linkQueue<elemType>::deQueue() {
 
 // ==============================================================
 
+template <class elemType>
+class stack {
+public:
+	virtual bool push(const elemType &x) = 0;
+	virtual elemType pop() = 0;
+	virtual elemType top() const = 0;
+	virtual bool isEmpty() const = 0;
+	virtual ~stack() {};
+};
+
+template <class elemType>
+class linkStack: public stack<elemType> {
+private:
+	struct node {
+		elemType data;
+		node* next;
+		node():next(NULL) {}
+		node(const elemType &x, node* n=NULL) {
+			data = x;
+			next = n;
+		}
+		~node() {};
+	};
+	node* top_p;
+public:
+	linkStack() {top_p = NULL;}
+	~linkStack();
+	bool isEmpty() const {return top_p == NULL;}
+	bool push(const elemType &x) {top_p = new node(x, top_p);}
+	elemType pop();
+	elemType top() const {return top_p->data;}
+};
+
+template <class elemType>
+elemType linkStack<elemType>::pop() {
+	node* tmp = top_p;
+	elemType x = tmp->data;
+	top_p = top_p->next;
+	delete tmp;
+	return x;
+}
+
+template <class elemType>
+linkStack<elemType>::~linkStack() {
+	node* tmp;
+	while (top_p) {
+		tmp = top_p;
+		top_p = top_p->next;
+		delete tmp;
+	}
+}
+
+// ==============================================================
+
 /*
 int main() {
 	binaryTree<char> a;
 	a.createTree('#');
 	a.levelOrder();
 	a.preOrder();
+	a.preOrderWithoutRecursion();
 	a.midOrder();
+	a.midOrderWithoutRecursion();
 	a.postOrder();
+	a.postOrderWithoutRecursion();
 	return 0;
 }
 */
