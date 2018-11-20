@@ -269,6 +269,35 @@ void binaryTree<elemType>::levelOrderWithSiblings() const {
 
 template <class elemType>
 void binaryTree<elemType>::createTreeWithTheNumberOfNodes() {
+	
+	/*
+
+	Input Format
+	输入一共包含N+1行。
+
+	第一行含有一个正整数N，代表树中结点总数。
+
+	第二行到第N+1行，每行包含三个整数。其中第i行的三个整数Pi，Qi，Vi，
+	代表结点i的左孩子为Pi，右孩子为Qi，结点i自身的权值为Vi。
+	若Pi=0，则表明结点i没有左孩子。同样的，若Qi=0，则表明结点i没有右孩子。
+	(第i行指的是这N行中的第i行)
+	
+	eg:
+
+	4
+	0 0 1
+	0 0 2
+	1 0 3
+	3 2 4
+
+	means:
+	
+	    4
+	  3   2
+	1
+
+	*/
+
 	int nodenum, pi, qi, vi;
 	cin >> nodenum;
 	int i = nodenum;
