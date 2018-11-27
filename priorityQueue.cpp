@@ -12,7 +12,7 @@ public:
 };
 
 template <class elemType>
-class priorityQueue: public queue<elemType> {
+class minHeap: public queue<elemType> {
 private:
 	int currentSize;
 	elemType *array;
@@ -21,13 +21,13 @@ private:
 	void buildHeap();
 	void percolateDown(int hole);
 public:
-	priorityQueue(int capacity = 100) {
+	minHeap(int capacity = 100) {
 		array = new elemType[capacity];
 		maxSize = capacity;
 		currentSize = 0;
 	}
-	priorityQueue(const elemType *items, int size);
-	~priorityQueue() {delete[] array;}
+	minHeap(const elemType *items, int size);
+	~minHeap() {delete[] array;}
 	bool isEmpty() const {return currentSize == 0;}
 	bool enQueue(const elemType &x);
 	elemType deQueue();
@@ -37,7 +37,7 @@ public:
 };
 
 template <class elemType>
-bool priorityQueue<elemType>::enQueue(const elemType &x) {
+bool minHeap<elemType>::enQueue(const elemType &x) {
 	if (currentSize == maxSize - 1) return false;
 	int hole = ++currentSize;
 	for (; hole > 1 && x < array[hole / 2]; hole /= 2) array[hole] = array[hole / 2];
@@ -46,7 +46,7 @@ bool priorityQueue<elemType>::enQueue(const elemType &x) {
 } 
 
 template <class elemType>
-elemType priorityQueue<elemType>::deQueue() {
+elemType minHeap<elemType>::deQueue() {
 	elemType minItem;
 	minItem = array[1];
 	array[1] = array[currentSize--];
@@ -55,7 +55,7 @@ elemType priorityQueue<elemType>::deQueue() {
 }
 
 template <class Type>
-void priorityQueue<Type>::percolateDown(int hole) {
+void minHeap<Type>::percolateDown(int hole) {
 	int child;
 	Type tmp = array[hole];
 	for (; hole * 2 <= currentSize; hole = child) {
@@ -68,13 +68,13 @@ void priorityQueue<Type>::percolateDown(int hole) {
 }
 
 template <class elemType>
-void priorityQueue<elemType>::buildHeap() {
+void minHeap<elemType>::buildHeap() {
 	for (int i = currentSize / 2; i > 0; i--)
         percolateDown(i);
 }
 
 template <class elemType>
-priorityQueue<elemType>::priorityQueue(const elemType *items, int size) {
+minHeap<elemType>::minHeap(const elemType *items, int size) {
 	maxSize = size * 2;
 	currentSize = size;
 	array = new elemType[maxSize];
@@ -83,7 +83,7 @@ priorityQueue<elemType>::priorityQueue(const elemType *items, int size) {
 }
 
 template <class elemType>
-int priorityQueue<elemType>::find(const elemType &x, int i) {
+int minHeap<elemType>::find(const elemType &x, int i) {
 	if (array[i] > x) return i;
 	bool left = true, right = true;
 	int left1, right1;
@@ -104,26 +104,100 @@ int priorityQueue<elemType>::find(const elemType &x, int i) {
 }
 
 template <class elemType>
-void priorityQueue<elemType>::decrease(int i, const elemType &v) {
+void minHeap<elemType>::decrease(int i, const elemType &v) {
 	array[i] -= v;
 	elemType x = array[i];
 	for (; i > 1 && x < array[i / 2]; i /= 2) array[i] = array[i / 2];
 	array[i] = x;
 }
 
+//=====================================================================================
 
-int main() {
-	int s[] = {1, 5, 7, 4, 3, 2, 9};
-	priorityQueue<int> a(s, 7);
-	cout << a.isEmpty();
-	cout << a.deQueue();
-	cout << a.deQueue();
-	cout << a.deQueue();
-	cout << a.deQueue();
-	cout << a.deQueue();
-	cout << a.deQueue();
-	cout << a.deQueue();
-	cout << a.isEmpty() << endl;
-	return 0;
+template <class elemType>
+class maxHeap: public queue<elemType> {
+private:
+	int currentSize;
+	elemType *array;
+	int maxSize;
+	// void doubleSpace();
+	void buildHeap();
+	void percolateDown(int hole);
+public:
+	maxHeap(int capacity = 100) {
+		array = new elemType[capacity];
+		maxSize = capacity;
+		currentSize = 0;
+	}
+	maxHeap(const elemType *items, int size);
+	~maxHeap() {delete[] array;}
+	bool isEmpty() const {return currentSize == 0;}
+	bool enQueue(const elemType &x);
+	elemType deQueue();
+	elemType getHead() const {return array[1];}
+};
+
+template <class elemType>
+bool maxHeap<elemType>::enQueue(const elemType &x) {
+	if (currentSize == maxSize - 1) return false;
+	int hole = ++currentSize;
+	for (; hole > 1 && x > array[hole / 2]; hole /= 2) array[hole] = array[hole / 2];
+	array[hole] = x;
+	return true;
+} 
+
+template <class elemType>
+elemType maxHeap<elemType>::deQueue() {
+	elemType minItem;
+	minItem = array[1];
+	array[1] = array[currentSize--];
+	percolateDown(1);
+	return minItem;
 }
 
+template <class Type>
+void maxHeap<Type>::percolateDown(int hole) {
+	int child;
+	Type tmp = array[hole];
+	for (; hole * 2 <= currentSize; hole = child) {
+		child = hole * 2;
+		if (child != currentSize && array[child + 1] > array[child]) child++;
+		if (array[child] > tmp) array[hole] = array[child];
+		else break;
+	}
+	array[hole] = tmp;
+}
+
+template <class elemType>
+void maxHeap<elemType>::buildHeap() {
+	for (int i = currentSize / 2; i > 0; i--)
+        percolateDown(i);
+}
+
+template <class elemType>
+maxHeap<elemType>::maxHeap(const elemType *items, int size) {
+	maxSize = size * 2;
+	currentSize = size;
+	array = new elemType[maxSize];
+	for (int i = 0; i < size; i++) array[i + 1] = items[i];
+	buildHeap();
+}
+
+//=====================================================================================
+
+/*
+int main() {
+	int s[] = {13, 53, 12, 34, 2, 12, 4, 67, 1, 5, 7, 4, 3, 2, 9, 10, 8, 0, 12};
+
+	minHeap<int> a(s, sizeof(s) / sizeof(s[0]));
+	cout << a.isEmpty() << ' ';
+	while (!a.isEmpty()) cout << a.deQueue() << ' ';
+	cout << a.isEmpty() << endl;
+
+	maxHeap<int> b(s, sizeof(s) / sizeof(s[0]));
+	cout << b.isEmpty() << ' ';
+	while (!b.isEmpty()) cout << b.deQueue() << ' ';
+	cout << b.isEmpty() << endl;
+
+	return 0;
+}
+*/
