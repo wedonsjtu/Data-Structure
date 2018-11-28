@@ -628,6 +628,58 @@ linkStack<elemType>::~linkStack() {
 
 // ==============================================================
 
+template <class elemType>
+class sequentiallyStoredBinaryTree {
+private:
+	elemType *array;
+	int currentSize;
+
+public:
+	sequentiallyStoredBinaryTree(elemType a[], int n);
+	~sequentiallyStoredBinaryTree() {delete[] array;}
+	void preOrder() const {preOrder(1); cout << endl;}
+	void midOrder() const {midOrder(1); cout << endl;}
+	void postOrder() const {postOrder(1); cout << endl;}
+
+private:
+	void preOrder(int root) const;
+	void midOrder(int root) const;
+	void postOrder(int root) const;
+};
+
+template <class elemType>
+sequentiallyStoredBinaryTree<elemType>::sequentiallyStoredBinaryTree(elemType a[], int n) {
+	array = new elemType[n+1];
+	currentSize = n;
+	for (int i=0; i < n; ++i) array[i+1] = a[i];
+}
+
+template <class elemType>
+void sequentiallyStoredBinaryTree<elemType>::preOrder(int root) const {
+	if (root > currentSize) return;
+	cout << array[root] << ' ';
+	preOrder(root * 2);
+	preOrder(root * 2 + 1);
+}
+
+template <class elemType>
+void sequentiallyStoredBinaryTree<elemType>::midOrder(int root) const {
+	if (root > currentSize) return;
+	midOrder(root * 2);
+	cout << array[root] << ' ';
+	midOrder(root * 2 + 1);
+}
+
+template <class elemType>
+void sequentiallyStoredBinaryTree<elemType>::postOrder(int root) const {
+	if (root > currentSize) return;
+	postOrder(root * 2);
+	postOrder(root * 2 + 1);
+	cout << array[root] << ' ';
+}
+
+// ==============================================================
+
 /*
 int main() {
 	binaryTree<char> a;
@@ -644,6 +696,12 @@ int main() {
 	binaryTree<char> b;
 	b.createTree('#');
 	cout << (a == b) <<endl;
+
+	int s[] = {3,5,3,1,7,9,6,4,3,2,6,87,56,53,23,12};
+	sequentiallyStoredBinaryTree<int> c(s, sizeof(s) / sizeof(s[0]));
+	c.preOrder();
+	c.midOrder();
+	c.postOrder();
 	return 0;
 }
 */
