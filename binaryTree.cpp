@@ -44,6 +44,7 @@ public:
 	void postOrderWithoutRecursion() const;
 	void midOrderWithoutRecursion() const;
 	bool operator==(const binaryTree<elemType> &other) const {return isEqual(root, other.root);}
+	bool isSymmetric() const {if (!root) return true; return isSymmetric(root->left, root->right);}
 private:
 	int height(Node *t) const;
 	void clear(Node *t);
@@ -54,6 +55,7 @@ private:
 	void levelOrder(Node *t) const;
 	void createWithPreOrderAndMidOrder(Node *&r, char *pre, int pre1, int pre2, char *mid, int mid1, int mid2);
 	bool isEqual(Node *self, Node *other) const;
+	bool isSymmetric(Node *a, Node *b) const;
 };
 
 template <class elemType>
@@ -402,6 +404,13 @@ bool binaryTree<elemType>::isEqual(Node *self, Node *other) const {
 	return isEqual(self->left, other->left) && isEqual(self->right, other->right);
 }
 
+template <class elemType>
+bool binaryTree<elemType>::isSymmetric(Node *a, Node *b) const {
+	if (!a) return (!b);
+	if (!b || a->data != b->data) return false;
+	return isSymmetric(a->left, b->right) && isSymmetric(a->right, b->left);
+}
+
 template <class elemType> class linkStack;
 
 template <class elemType>
@@ -619,7 +628,7 @@ linkStack<elemType>::~linkStack() {
 
 // ==============================================================
 
-
+/*
 int main() {
 	binaryTree<char> a;
 	a.createTree('#');
@@ -630,10 +639,11 @@ int main() {
 	a.midOrderWithoutRecursion();
 	a.postOrder();
 	a.postOrderWithoutRecursion();
+	cout << a.isSymmetric() << endl;
 	cout << endl << "=========================" << endl << endl;
 	binaryTree<char> b;
 	b.createTree('#');
 	cout << (a == b) <<endl;
 	return 0;
 }
-
+*/
