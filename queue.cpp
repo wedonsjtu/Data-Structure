@@ -28,8 +28,8 @@ public:
 
 template <class elemType>
 seqQueue<elemType>::seqQueue(int initSize) {
-	elem = new elemType[initSize];
-	maxSize = initSize;
+	elem = new elemType[initSize + 1];
+	maxSize = initSize + 1;
 	front = rear = 0;
 }
 
@@ -43,6 +43,7 @@ bool seqQueue<elemType>::enQueue(const elemType &x) {
 
 template <class elemType>
 elemType seqQueue<elemType>::deQueue() {
+	// if (front == rear) then ERROR
 	front = (front + 1) % maxSize;
 	return elem[front];
 }
